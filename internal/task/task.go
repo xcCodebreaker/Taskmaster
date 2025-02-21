@@ -63,3 +63,27 @@ func (tm *TaskManager) ToggleTaskDone(id int) {
 		}
 	}
 }
+
+func (tm *TaskManager) Undo() error {
+	if len(tm.history) == 0 {
+		return nil
+	}
+	tm.redoHistory = append(tm.redoHistory, tm.tasks)
+	tm.tasks = tm.history[len(tm.history)-1]
+	tm.history = tm.history[:len(tm.history)-1]
+	return nil
+}
+
+func (tm *TaskManager) Redo() error {
+	if len(tm.redoHistory) == 0 {
+		return nil
+	}
+	tm.history = append(tm.history, tm.tasks)
+	tm.tasks = tm.redoHistory[len(tm.redoHistory)-1]
+	tm.redoHistory = tm.redoHistory[:len(tm.redoHistory)-1]
+	return nil
+}
+
+func (tm *TaskManager) ListTasks() []Task {
+	return tm.tasks
+}
