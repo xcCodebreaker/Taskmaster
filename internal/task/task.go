@@ -7,38 +7,38 @@ type Task struct {
 }
 
 type TaskManager struct {
-	tasks       []Task
-	history     [][]Task
-	redoHistory [][]Task
+	Tasks       []Task
+	History     [][]Task
+	RedoHistory [][]Task
 }
 
 // Find out about constructor functions
 func NewTaskManager() *TaskManager {
 	return &TaskManager{
-		tasks: []Task{},
+		Tasks: []Task{},
 	}
 }
 
 // The method name speaks for itself about what it does...
 func (tm *TaskManager) getNextID() int {
-	if len(tm.tasks) == 0 {
+	if len(tm.Tasks) == 0 {
 		return 1
 	}
 
-	return tm.tasks[len(tm.tasks)-1].ID + 1
+	return tm.Tasks[len(tm.Tasks)-1].ID + 1
 }
 
 // Necessary for undo/redo functions. Any changes made in the program, this func will be run everytime.
 func (tm *TaskManager) saveState() {
-	state := make([]Task, len(tm.tasks))
-	copy(state, tm.tasks)
-	tm.history = append(tm.history, state)
-	tm.redoHistory = nil
+	state := make([]Task, len(tm.Tasks))
+	copy(state, tm.Tasks)
+	tm.History = append(tm.History, state)
+	tm.RedoHistory = nil
 }
 
 func (tm *TaskManager) AddTask(description string) {
 	tm.saveState()
-	tm.tasks = append(tm.tasks, Task{
+	tm.Tasks = append(tm.Tasks, Task{
 		ID:          tm.getNextID(),
 		Description: description,
 		Done:        false,
@@ -47,43 +47,43 @@ func (tm *TaskManager) AddTask(description string) {
 
 func (tm *TaskManager) DeleteTask(id int) {
 	tm.saveState()
-	for i, t := range tm.tasks {
+	for i, t := range tm.Tasks {
 		if t.ID == id {
-			tm.tasks = append(tm.tasks[:i], tm.tasks[i+1:]...)
+			tm.Tasks = append(tm.Tasks[:i], tm.Tasks[i+1:]...)
 		}
 	}
 }
 
 func (tm *TaskManager) ToggleTaskDone(id int) {
-	for i, t := range tm.tasks {
+	for i, t := range tm.Tasks {
 		if t.ID == id {
 			tm.saveState()
-			tm.tasks[i].Done = !t.Done
+			tm.Tasks[i].Done = !t.Done
 			return
 		}
 	}
 }
 
 func (tm *TaskManager) Undo() error {
-	if len(tm.history) == 0 {
+	if len(tm.History) == 0 {
 		return nil
 	}
-	tm.redoHistory = append(tm.redoHistory, tm.tasks)
-	tm.tasks = tm.history[len(tm.history)-1]
-	tm.history = tm.history[:len(tm.history)-1]
+	tm.RedoHistory = append(tm.RedoHistory, tm.Tasks)
+	tm.Tasks = tm.History[len(tm.History)-1]
+	tm.History = tm.History[:len(tm.History)-1]
 	return nil
 }
 
 func (tm *TaskManager) Redo() error {
-	if len(tm.redoHistory) == 0 {
+	if len(tm.RedoHistory) == 0 {
 		return nil
 	}
-	tm.history = append(tm.history, tm.tasks)
-	tm.tasks = tm.redoHistory[len(tm.redoHistory)-1]
-	tm.redoHistory = tm.redoHistory[:len(tm.redoHistory)-1]
+	tm.History = append(tm.History, tm.Tasks)
+	tm.Tasks = tm.RedoHistory[len(tm.RedoHistory)-1]
+	tm.RedoHistory = tm.RedoHistory[:len(tm.RedoHistory)-1]
 	return nil
 }
 
 func (tm *TaskManager) ListTasks() []Task {
-	return tm.tasks
+	return tm.Tasks
 }
