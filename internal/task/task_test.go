@@ -63,4 +63,5 @@ func TestToggleTaskDone(t *testing.T) {
 	if tm.Tasks[0].Done {
 		t.Error("expected task to be not done after toggling again")
 	}
+
 }
