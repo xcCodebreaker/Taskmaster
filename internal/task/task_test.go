@@ -31,3 +31,36 @@ func TestAddTask(t *testing.T) {
 		t.Error("newly added task should not be marked as done")
 	}
 }
+
+func TestDeleteTask(t *testing.T) {
+	tm := NewTaskManager()
+	tm.AddTask("Task 1")
+	tm.AddTask("Task 2")
+
+	tm.DeleteTask(1)
+	if len(tm.Tasks) != 1 {
+		t.Errorf("expected 1 task after deletion, got %d", len(tm.Tasks))
+	}
+	if tm.Tasks[0].ID != 2 {
+		t.Errorf("expected remaining task ID to be 2, got %d", tm.Tasks[0].ID)
+	}
+}
+
+func TestToggleTaskDone(t *testing.T) {
+	tm := NewTaskManager()
+	tm.AddTask("Toggle Task")
+
+	if tm.Tasks[0].Done {
+		t.Error("expected task to be not done initially")
+	}
+
+	tm.ToggleTaskDone(1)
+	if !tm.Tasks[0].Done {
+		t.Error("expected task to be done after toggling")
+	}
+
+	tm.ToggleTaskDone(1)
+	if tm.Tasks[0].Done {
+		t.Error("expected task to be not done after toggling again")
+	}
+}
