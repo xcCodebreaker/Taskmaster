@@ -45,3 +45,27 @@ func TestSaveToFile(t *testing.T) {
 		}
 	}
 }
+
+func TestLoadFromFile(t *testing.T) {
+	tempDir := t.TempDir()
+	filePath := filepath.Join(tempDir, "tasks.json")
+
+	tasks := sampleTasks()
+	if err := SaveToFile(tasks, filePath); err != nil {
+		t.Fatalf("failed to save tasks to file: %v", err)
+	}
+
+	loadedTasks, err := LoadFromFile(filePath)
+	if err != nil {
+		t.Fatalf("LoadFromFile failed: %v", err)
+	}
+
+	if len(loadedTasks) != len(tasks) {
+		t.Fatalf("expected %d tasks, got %d", len(tasks), len(loadedTasks))
+	}
+	for i, tsk := range tasks {
+		if loadedTasks[i] != tsk {
+			t.Errorf("expected task %v, got %v", tsk, loadedTasks[i])
+		}
+	}
+}
